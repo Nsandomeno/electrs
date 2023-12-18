@@ -26,15 +26,39 @@ impl<'a> Iterator for ScanIterator<'a> {
         if self.done {
             return None;
         }
-        let (key, value) = self.iter.next()?;
-        if !key.starts_with(&self.prefix) {
-            self.done = true;
-            return None;
+        match self.iter.next() {
+            // none arm
+            None => return None,
+            Some(res) => {
+                match res {
+                    // ok arm
+                    Ok((key, value)) => {
+                        if !key.starts_with(&self.prefix) {
+                            // TODO should the work be marked complete here? 
+                            // leaving based on desire to have a minimal footprint on original.
+                            self.done = true;
+                            return None
+                        } else {
+                            // return the expected DBRow
+                            return Some(DBRow { key: key.to_vec(), value: value.to_vec() })
+                        }
+                    },
+                    // error arm
+                    // TODO should do some handling or more research into the downstream handling of None.
+                    // leaving based on desire to have a minimal footprint on original.
+                    Err(_) => return None,
+                }
+            },
         }
-        Some(DBRow {
-            key: key.to_vec(),
-            value: value.to_vec(),
-        })
+        // let (key, value) = self.iter.next()?;
+        // if !key.starts_with(&self.prefix) {
+        //     self.done = true;
+        //     return None;
+        // }
+        // Some(DBRow {
+        //     key: key.to_vec(),
+        //     value: value.to_vec(),
+        // })
     }
 }
 
