@@ -50,15 +50,6 @@ impl<'a> Iterator for ScanIterator<'a> {
                 }
             },
         }
-        // let (key, value) = self.iter.next()?;
-        // if !key.starts_with(&self.prefix) {
-        //     self.done = true;
-        //     return None;
-        // }
-        // Some(DBRow {
-        //     key: key.to_vec(),
-        //     value: value.to_vec(),
-        // })
     }
 }
 
